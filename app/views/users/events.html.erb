@@ -1,0 +1,48 @@
+<div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
+<h1 class="text-3xl font-bold text-gray-900 mb-6">Etkinliklerim</h1>
+
+<div class="mb-8">
+    <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Oluşturduğum Etkinlikler</h2>
+    
+    <% if @created_events.any? %>
+    <div class="space-y-4">
+        <% @created_events.each do |event| %>
+        <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
+            <div>
+            <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
+            <p class="text-sm text-gray-600"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
+            </div>
+            <div>
+            <%= link_to "Düzenle", edit_event_path(event), class: "bg-yellow-500 text-white px-3 py-1 rounded text-sm mr-2" %>
+            </div>
+        </div>
+        <% end %>
+    </div>
+    <% else %>
+    <p class="text-gray-500 text-sm">Henüz bir etkinlik oluşturmadınız.</p>
+    <% end %>
+</div>
+
+
+<div>
+    <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Katıldığım Etkinlikler</h2>
+    
+    <% if @registered_events.any? %>
+    <div class="space-y-4">
+        <% @registered_events.each do |event| %>
+        <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
+            <div>
+            <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
+            <p class="text-sm text-gray-600"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
+            </div>
+            <div>
+            <%= link_to "Detaya Git", event_path(event), class: "bg-indigo-600 text-white px-3 py-1 rounded text-sm" %>
+            </div>
+        </div>
+        <% end %>
+    </div>
+    <% else %>
+    <p class="text-gray-500 text-sm">Henüz katıldığınız bir etkinlik bulunmuyor.</p>
+    <% end %>
+</div>
+</div>

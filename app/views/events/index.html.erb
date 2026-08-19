@@ -1,0 +1,37 @@
+<div class="max-w-4xl mx-auto px-4 mt-6">
+  <%= form_with url: events_path, method: :get, local: true, class: "flex flex-col md:flex-row gap-3 mb-8 bg-white p-4 rounded-lg shadow-sm border border-gray-200" do %>
+    <div class="flex-1">
+      <%= text_field_tag :query, params[:query], placeholder: "Etkinlik başlığında ara...", class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= select_tag :category_id, options_from_collection_for_select(Category.all, :id, :name, params[:category_id]), include_blank: "Tüm Kategoriler", class: "border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+    </div>
+
+    <div>
+      <%= submit_tag "Filtrele", class: "bg-indigo-600 text-white px-5 py-2 rounded text-sm font-medium hover:bg-indigo-700 cursor-pointer w-full md:w-auto" %>
+    </div>
+
+    <% if params[:query].present? || params[:category_id].present? %>
+      <div>
+        <%= link_to "Sıfırla", events_path, class: "bg-gray-200 text-gray-700 px-4 py-2 rounded text-sm font-medium hover:bg-gray-300 inline-block text-center" %>
+      </div>
+    <% end %>
+  <% end %>
+
+  <!-- Etkinlikler Listesi -->
+  <h2 class="text-2xl font-bold text-gray-900 mb-6">Yaklaşan Etkinlikler</h2>
+
+  <% if @events.any? %>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <%= render partial: 'event', collection: @events %>
+    </div>
+
+    <!-- Sayfalama (Pagination) Alanı -->
+    <div class="mt-8 flex justify-center">
+      <%= paginate @events %>
+    </div>
+  <% else %>
+    <p class="text-gray-500 text-sm bg-white p-4 rounded border border-gray-200">Aradığınız kriterlere uygun etkinlik bulunamadı.</p>
+  <% end %>
+</div>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Etkinlik Hane" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Etkinlik Hane">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="bg-gray-50 text-gray-900">
+    <!-- Üst Menü -->
+    <nav style="background-color: #111827; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; color: white;">
+      <div>
+        <%= link_to "Etkinlik-Hane", root_path, style: "color: white; font-weight: bold; font-size: 18px; text-decoration: none;" %>
+      </div>
+      
+      <div style="display: flex; align-items: center; gap: 16px; font-size: 14px;">
+        <% if logged_in? %>
+          <% if current_user.respond_to?(:admin?) && current_user.admin? %>
+            <%= link_to "Kategori Yönetimi", admin_categories_path, style: "color: #fbbf24; text-decoration: none; font-weight: 500;" %>
+          <% end %>
+          <%= link_to "Etkinliklerim", my_events_path, style: "color: white; text-decoration: none;" %>
+          <%= link_to "Etkinlik Oluştur", new_event_path, style: "color: white; text-decoration: none;" %>
+          <span style="color: #ffffff; font-weight: 500;"><%= current_user.email %></span>
+          <%= link_to "Çıkış Yap", logout_path, data: { turbo_method: :delete }, style: "background-color: #dc2626; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;" %>
+        <% else %>
+          <%= link_to "Giriş Yap", login_path, style: "color: white; text-decoration: none;" %>
+          <%= link_to "Kayıt Ol", signup_path, style: "background-color: #4f46e5; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;" %>
+        <% end %>
+      </div>
+    </nav>
+
+    <!-- Ana İçerik -->
+    <main class="container mx-auto mt-8 px-5">
+      <%= yield %>
+    </main>
+  </body>
+</html>

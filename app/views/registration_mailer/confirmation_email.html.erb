@@ -1,0 +1,13 @@
+<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; border-radius: 8px;">
+    <h2 style="color: #4f46e5;">Etkinlik Kaydınız Alındı!</h2>
+    <p>Merhaba,</p>
+    <p><strong><%= @event.title %></strong> adlı etkinliğe kaydınız başarıyla gerçekleşmiştir.</p>
+
+    <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0;">
+    <p style="margin: 5px 0;"><strong>Tarih:</strong> <%= @event.date_time.strftime("%d.%m.%Y %H:%M") %></p>
+    <p style="margin: 5px 0;"><strong>Konum:</strong> <%= @event.location %></p>
+    </div>
+
+    <p>Etkinlikte görüşmek üzere!</p>
+    <p style="color: #6b7280; font-size: 12px; margin-top: 30px;">EtkinlikHane Ekibi</p>
+</div>

@@ -1,0 +1,16 @@
+tr:
+  activerecord:
+    errors:
+      messages:
+        blank: "boş bırakılamaz"
+        greater_than: "0'dan büyük olmalıdır"
+        not_a_number: "bir sayı olmalıdır"
+    attributes:
+      event:
+        title: "Etkinlik Başlığı"
+        description: "Açıklama"
+        event_date: "Tarih ve Saat"
+        date_time: "Tarih ve Saat"
+        datetime: "Tarih ve Saat"
+        location: "Konum"
+        quota: "Kontenjan"

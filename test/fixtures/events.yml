@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  title: MyString
+  description: MyText
+  date_time: 2026-08-12 15:27:12
+  location: MyString
+  quota: 1
+  image_url: MyString
+  user: one
+  category: one
+
+two:
+  title: MyString
+  description: MyText
+  date_time: 2026-08-12 15:27:12
+  location: MyString
+  quota: 1
+  image_url: MyString
+  user: two
+  category: two

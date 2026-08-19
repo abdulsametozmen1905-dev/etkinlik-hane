@@ -1,0 +1,36 @@
+<%= form_with model: @event, local: true, class: "space-y-4" do |f| %>
+<div>
+    <%= f.label :title, "Etkinlik Başlığı", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :title, class: "w-full border border-gray-300 rounded px-3 py-2" %>
+</div>
+
+<div>
+    <%= f.label :description, "Açıklama", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_area :description, class: "w-full border rounded px-3 py-2" %>
+</div>
+
+<div>
+    <%= f.label :category_id, "Kategori", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.collection_select :category_id, Category.all, :id, :name, { prompt: "Kategori Seçin" }, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div>
+        <%= f.label :date_time, "Tarih ve Saat", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.datetime_local_field :date_time, class: "w-full border rounded px-3 py-2" %>
+    </div>
+    <div>
+        <%= f.label :quota, "Kontenjan", class: "block text-sm font-medium text-gray-700" %>
+        <%= f.number_field :quota, class: "w-full border rounded px-3 py-2" %>
+    </div>
+</div>
+
+<div>
+    <%= f.label :location, "Konum", class: "block text-sm font-medium text-gray-700" %>
+    <%= f.text_field :location, class: "w-full border rounded px-3 py-2" %>
+</div>
+
+<div>
+    <%= f.submit "Etkinliği Oluştur", class: "bg-indigo-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-indigo-700 w-full" %>
+</div>
+<% end %>

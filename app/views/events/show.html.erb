@@ -1,0 +1,105 @@
+<div class="w-full max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-sm border border-gray-200 mt-6 mb-12">
+
+  <% if @event.cover_image.attached? %>
+    <div class="mb-6 w-full flex justify-center bg-gray-50 rounded-lg overflow-hidden border border-gray-100 p-2">
+      <%= image_tag @event.cover_image, class: "w-full max-h-80 object-cover rounded-lg shadow-sm" %>
+    </div>
+  <% end %>
+
+  <h1 class="text-2xl font-bold text-gray-900 mb-2"><%= @event.title %></h1>
+  <p class="text-gray-600 text-sm mb-4 leading-relaxed"><%= @event.description %></p>
+
+  <div class="grid grid-cols-2 gap-4 mb-6 text-xs text-gray-600 border-t border-b border-gray-100 py-3">
+    <div>
+      <p class="mb-1"><strong class="text-gray-800">Tarih:</strong> <%= @event.date_time.strftime("%d.%m.%Y %H:%M") %></p>
+      <p><strong class="text-gray-800">Konum:</strong> <%= @event.location %></p>
+    </div>
+    <div>
+      <p class="mb-1"><strong class="text-gray-800">Düzenleyen:</strong> <%= @event.user&.email || "Bilinmiyor" %></p>
+      <p><strong class="text-gray-800">Kontenjan:</strong> <%= @event.registrations.count %> / <%= @event.quota %></p>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <%= link_to "← Geri Dön", events_path, class: "text-indigo-600 hover:underline font-medium text-xs" %>
+
+    <div class="flex gap-2 items-center">
+      <% if logged_in? %>
+        <% reg = Registration.find_by(user_id: current_user.id, event_id: @event.id) %>
+        
+        <% if @event.user_id == current_user.id %>
+          <!-- Etkinliğin sahibi ise -->
+          <span style="background-color: #4f46e5 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Bu Etkinliğin Sahibisiniz</span>
+        <% elsif reg %>
+          <%= link_to "Kaydı İptal Et", event_registration_path(@event, reg),
+              data: { turbo_method: :delete, turbo_confirm: "Emin misin?" },
+              style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+        <% elsif @event.date_time <= Time.current %>
+          <span style="background-color: #9ca3af !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Etkinlik Başladı / Süresi Doldu</span>
+        <% elsif @event.registrations.count >= @event.quota %>
+          <span style="background-color: #9ca3af !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Dolu</span>
+        <% else %>
+          <%= link_to "Katıl", event_registrations_path(@event),
+              data: { turbo_method: :post },
+              style: "background-color: #16a34a !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+        <% end %>
+
+        <% if logged_in? && @event.user_id == current_user.id %>
+          <%= link_to "Düzenle", edit_event_path(@event),
+              style: "background-color: #ca8a04 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+        <% end %>
+
+        <% if logged_in? && (@event.user_id == current_user.id || current_user.admin?) %>
+          <%= link_to "Sil", event_path(@event),
+              data: { turbo_method: :delete, turbo_confirm: "Bu etkinliği silmek istediğine emin misin?" },
+              style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+        <% end %>
+
+      <% else %>
+        <span class="text-xs text-gray-400">İşlem için giriş yapmalısın.</span>
+      <% end %>
+    </div>
+  </div>
+
+  <div>
+    <h3 class="text-lg font-bold text-gray-900 mb-3">Yorumlar (<%= @event.comments.count %>)</h3>
+
+    <% if logged_in? %>
+      <%= form_with model: [@event, Comment.new], local: true, class: "mb-4" do |f| %>
+        <div class="mb-2">
+          <%= f.text_area :content, rows: 2, placeholder: "Bir yorum yaz...", class: "w-full p-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-indigo-500 text-xs bg-gray-50" %>
+        </div>
+        <div class="flex justify-end">
+          <%= f.submit "Yorum Yap", class: "bg-indigo-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-indigo-700 cursor-pointer" %>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-xs text-gray-500 mb-4 bg-gray-50 p-3 rounded-lg border border-gray-100">Yorum yapmak için <%= link_to "giriş yap", login_path, class: "text-indigo-600 underline" %>.</p>
+    <% end %>
+
+    <% if @event.comments.any? %>
+      <div class="space-y-3">
+        <% @event.comments.order(created_at: :desc).each do |comment| %>
+          <div class="p-3.5 bg-gray-50 rounded-lg border border-gray-200 relative pb-10">
+            <div class="flex items-center justify-between text-[11px] text-gray-500 border-b border-gray-200 pb-2 mb-2">
+              <span class="font-semibold text-gray-800"><%= comment.user.email %></span>
+              <span><%= comment.created_at.strftime("%d.%m.%Y %H:%M") %></span>
+            </div>
+
+            <p class="text-gray-800 text-xs leading-relaxed break-all pr-16"><%= comment.content %></p>
+
+            <% if logged_in? && (comment.user == current_user || current_user.admin?) %>
+              <div class="absolute bottom-2.5 right-3">
+                <%= link_to "Yorumu Sil", event_comment_path(@event, comment), 
+                    data: { turbo_method: :delete, turbo_confirm: "Silmek istediğine emin misin?" }, 
+                    style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 4px 10px; border-radius: 4px; font-weight: 500; text-decoration: none; font-size: 10px; display: inline-block;" %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <p class="text-gray-400 text-xs italic">Henüz yorum yapılmamış.</p>
+    <% end %>
+  </div>
+</div>

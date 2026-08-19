@@ -1,0 +1,31 @@
+<div class="w-full max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-sm border border-gray-200 mt-6 mb-12">
+  <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
+    <h1 class="text-2xl font-bold text-gray-900">Kategoriler</h1>
+    <% if logged_in? && current_user.admin? %>
+      <%= link_to "Yeni Kategori Ekle", new_category_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-xs font-medium shadow-sm" %>
+    <% end %>
+  </div>
+
+  <% if @categories.any? %>
+    <div class="space-y-3">
+      <% @categories.each do |category| %>
+        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 flex items-center justify-between">
+          <span class="font-semibold text-gray-800 text-sm"><%= category.name %></span>
+          
+          <% if logged_in? && current_user.admin? %>
+            <div class="flex gap-2">
+              <%= link_to "Düzenle", edit_category_path(category), class: "bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs font-medium" %>
+              <%= link_to "Sil", category_path(category), data: { turbo_method: :delete, turbo_confirm: "Silmek istediğine emin misin?" }, class: "bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs font-medium" %>
+            </div>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="text-gray-400 text-xs italic">Henüz kategori eklenmemiş.</p>
+  <% end %>
+
+  <div class="mt-6">
+    <%= link_to "← Ana Sayfaya Dön", root_path, class: "text-indigo-600 hover:underline font-medium text-xs" %>
+  </div>
+</div>
