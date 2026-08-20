@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content='text/html; charset=UTF-8' http-equiv='Content-Type' />
+  </head>
+  <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e5e7eb; rounded: 8px;">
+      <h2 style="color: #4f46e5;">Merhaba, <%= @user.email %>!</h2>
+      <p><strong><%= @event.title %></strong> isimli etkinliğe kaydınız başarıyla gerçekleşti.</p>
+      
+      <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin: 20px 0;">
+        <p style="margin: 5px 0;">📅 <strong>Tarih:</strong> <%= @event.date_time.strftime("%d.%m.%Y %H:%M") %></p>
+        <p style="margin: 5px 0;">📍 <strong>Konum:</strong> <%= @event.location %></p>
+      </div>
+
+      <p>Etkinlikte görüşmek üzere!</p>
+      <p style="font-size: 12px; color: #6b7280;">Etkinlik-Hane Ekibi</p>
+    </div>
+  </body>
+</html>

@@ -59,11 +59,11 @@ group :development, :test do
 end
 
 group :development do
+  gem 'letter_opener_web'
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
 end
 
-gem 'letter_opener'
   gem 'kaminari'
 group :test do
   # Use system testing [https://guides.rubyonrails.org/testing.html#system-testing]

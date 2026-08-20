@@ -1,48 +1,61 @@
 <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-sm border border-gray-200 mt-6">
-<h1 class="text-3xl font-bold text-gray-900 mb-6">Etkinliklerim</h1>
+  <h1 class="text-3xl font-bold text-gray-900 mb-6">Etkinliklerim</h1>
 
-<div class="mb-8">
+  <div class="mb-8">
     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Oluşturduğum Etkinlikler</h2>
     
     <% if @created_events.any? %>
-    <div class="space-y-4">
+      <div class="space-y-4">
         <% @created_events.each do |event| %>
-        <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
+          <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
             <div>
-            <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
-            <p class="text-sm text-gray-600"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
+                
+                <%# Durum Rozeti %>
+                <% if event.draft? %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-800 border border-amber-200">
+                    📝 Taslak
+                  </span>
+                <% else %>
+                  <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                    🟢 Yayında
+                  </span>
+                <% end %>
+              </div>
+              
+              <p class="text-sm text-gray-600 mt-1"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
             </div>
             <div>
-            <%= link_to "Düzenle", edit_event_path(event), class: "bg-yellow-500 text-white px-3 py-1 rounded text-sm mr-2" %>
+              <%= link_to "Düzenle", edit_event_path(event), class: "bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1.5 rounded text-sm font-medium transition mr-2" %>
             </div>
-        </div>
+          </div>
         <% end %>
-    </div>
+      </div>
     <% else %>
-    <p class="text-gray-500 text-sm">Henüz bir etkinlik oluşturmadınız.</p>
+      <p class="text-gray-500 text-sm">Henüz bir etkinlik oluşturmadınız.</p>
     <% end %>
-</div>
+  </div>
 
-
-<div>
+  <div>
     <h2 class="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">Katıldığım Etkinlikler</h2>
     
     <% if @registered_events.any? %>
-    <div class="space-y-4">
+      <div class="space-y-4">
         <% @registered_events.each do |event| %>
-        <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
+          <div class="p-4 border rounded-lg flex justify-between items-center bg-gray-50">
             <div>
-            <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
-            <p class="text-sm text-gray-600"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
+              <h3 class="font-bold text-lg text-indigo-600"><%= link_to event.title, event_path(event) %></h3>
+              <p class="text-sm text-gray-600 mt-1"><%= event.date_time.strftime("%d.%m.%Y %H:%M") %> - <%= event.location %></p>
             </div>
             <div>
-            <%= link_to "Detaya Git", event_path(event), class: "bg-indigo-600 text-white px-3 py-1 rounded text-sm" %>
+              <%= link_to "Detaya Git", event_path(event), class: "bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded text-sm font-medium transition" %>
             </div>
-        </div>
+          </div>
         <% end %>
-    </div>
+      </div>
     <% else %>
-    <p class="text-gray-500 text-sm">Henüz katıldığınız bir etkinlik bulunmuyor.</p>
+      <p class="text-gray-500 text-sm">Henüz katıldığınız bir etkinlik bulunmuyor.</p>
     <% end %>
-</div>
+  </div>
 </div>

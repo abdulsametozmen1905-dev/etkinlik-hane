@@ -15,6 +15,10 @@ class UsersController < ApplicationController
     end
   end
 
+  def show
+    @user = current_user
+  end
+
   def events
     @created_events = current_user.events
     @registered_events = current_user.registered_events

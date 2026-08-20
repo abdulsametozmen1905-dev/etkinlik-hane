@@ -2,7 +2,8 @@ class EventsController < ApplicationController
   before_action :set_event, only: [:show, :edit, :update, :destroy]
 
   def index
-    @events = Event.upcoming
+    # Sadece yayında olan etkinlikleri listele
+    @events = Event.published.upcoming.includes(:category, :user)
 
     if params[:category_id].present?
       @events = @events.where(category_id: params[:category_id])
@@ -16,6 +17,12 @@ class EventsController < ApplicationController
   end
 
   def show
+    # Taslak olan etkinliğe sadece sahibi veya admin erişebilir
+    if @event.draft? && (current_user.nil? || (@event.user_id != current_user.id && !current_user.try(:admin?)))
+      redirect_to events_path, alert: "Bu etkinlik henüz yayında değil."
+      return
+    end
+
     @comment = Comment.new if defined?(Comment)
   end
 
@@ -59,6 +66,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(:title, :description, :date_time, :location, :quota, :category_id, :cover_image)
+    # :published parametresi güvenli parametrelere eklendi
+    params.require(:event).permit(:title, :description, :date_time, :location, :quota, :category_id, :cover_image, :published)
   end
 end

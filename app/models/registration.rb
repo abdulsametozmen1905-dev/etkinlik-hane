@@ -1,5 +1,15 @@
 class Registration < ApplicationRecord
   belongs_to :user
   belongs_to :event
-  validates :user_id, uniqueness: { scope: :event_id, message: "Bu etkinliğe zaten kayıtlısınız!" }
+
+  scope :confirmed, -> { where(status: "registered") }
+  scope :waitlisted, -> { where(status: "waitlisted") }
+
+  def waitlisted?
+    status == "waitlisted"
+  end
+
+  def confirmed?
+    status == "registered"
+  end
 end

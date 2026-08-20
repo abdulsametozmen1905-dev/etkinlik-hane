@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_14_073637) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_20_102729) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -64,6 +64,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_073637) do
     t.text "description"
     t.string "image_url"
     t.string "location"
+    t.boolean "published", default: false, null: false
     t.integer "quota"
     t.string "title"
     t.datetime "updated_at", null: false
@@ -72,9 +73,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_073637) do
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
+  create_table "ratings", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "event_id", null: false
+    t.integer "score"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["event_id"], name: "index_ratings_on_event_id"
+    t.index ["user_id", "event_id"], name: "index_ratings_on_user_id_and_event_id", unique: true
+    t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
   create_table "registrations", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "event_id", null: false
+    t.string "status", default: "registered", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.index ["event_id"], name: "index_registrations_on_event_id"
@@ -95,6 +108,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_14_073637) do
   add_foreign_key "comments", "users"
   add_foreign_key "events", "categories"
   add_foreign_key "events", "users"
+  add_foreign_key "ratings", "events"
+  add_foreign_key "ratings", "users"
   add_foreign_key "registrations", "events"
   add_foreign_key "registrations", "users"
 end

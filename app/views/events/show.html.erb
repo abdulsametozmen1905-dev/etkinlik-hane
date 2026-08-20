@@ -6,7 +6,17 @@
     </div>
   <% end %>
 
-  <h1 class="text-2xl font-bold text-gray-900 mb-2"><%= @event.title %></h1>
+  <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
+    <h1 class="text-2xl font-bold text-gray-900"><%= @event.title %></h1>
+    
+    <%# Ortalama Puan Rozeti %>
+    <div class="flex items-center gap-1.5 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-semibold text-amber-900">
+      <span class="text-amber-500 text-sm">★</span>
+      <span><%= @event.average_rating > 0 ? @event.average_rating : "Henüz Puan Yok" %></span>
+      <span class="text-amber-700 font-normal">(<%= @event.ratings.count %> Değerlendirme)</span>
+    </div>
+  </div>
+
   <p class="text-gray-600 text-sm mb-4 leading-relaxed"><%= @event.description %></p>
 
   <div class="grid grid-cols-2 gap-4 mb-6 text-xs text-gray-600 border-t border-b border-gray-100 py-3">
@@ -16,9 +26,53 @@
     </div>
     <div>
       <p class="mb-1"><strong class="text-gray-800">Düzenleyen:</strong> <%= @event.user&.email || "Bilinmiyor" %></p>
-      <p><strong class="text-gray-800">Kontenjan:</strong> <%= @event.registrations.count %> / <%= @event.quota %></p>
+      <p><strong class="text-gray-800">Kontenjan:</strong> <%= @event.confirmed_registrations_count %> / <%= @event.quota %></p>
     </div>
   </div>
+
+  <%# 1-5 Yıldız Puan Verme Kartı %>
+  <% if logged_in? %>
+    <% is_registered = @event.registrations.confirmed.exists?(user_id: current_user.id) %>
+
+    <% if is_registered %>
+      <% user_rating = @event.ratings.find_by(user_id: current_user.id) %>
+      <div class="mb-6 p-4 bg-gray-50 rounded-lg border border-gray-200 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <p class="text-xs font-semibold text-gray-800">Etkinliği Değerlendir</p>
+          <p class="text-[11px] text-gray-500">
+            <% if user_rating %>
+              Mevcut puanınız: <strong class="text-amber-600"><%= user_rating.score %> / 5 Yıldız</strong>
+            <% else %>
+              Bu etkinliğe henüz puan vermediniz.
+            <% end %>
+          </p>
+        </div>
+
+        <% form_url = user_rating ? event_rating_path(@event, user_rating) : event_ratings_path(@event) %>
+        <% form_method = user_rating ? :patch : :post %>
+
+        <%= form_with model: [@event, user_rating || Rating.new], url: form_url, method: form_method, local: true, class: "flex items-center gap-2" do |f| %>
+          <%= f.select :score,
+                options_for_select([
+                  ['★ 1 - Çok Kötü', 1],
+                  ['★★ 2 - Kötü', 2],
+                  ['★★★ 3 - Orta', 3],
+                  ['★★★★ 4 - İyi', 4],
+                  ['★★★★★ 5 - Harika', 5]
+                ], user_rating&.score || 5),
+                {},
+                class: "text-xs px-2.5 py-1.5 border border-gray-300 rounded-lg bg-white focus:ring-1 focus:ring-indigo-500 focus:outline-none cursor-pointer" %>
+          
+          <%= f.submit user_rating ? "Puanı Güncelle" : "Puan Ver",
+                style: "background-color: #f59e0b !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; cursor: pointer; border: none; display: inline-block;" %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="mb-6 p-3 bg-gray-50 rounded-lg border border-gray-200 text-xs text-gray-500">
+        ℹ️ Bu etkinliğe puan verebilmek için önce etkinliğe kayıt olmanız gerekmektedir.
+      </div>
+    <% end %>
+  <% end %>
 
   <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
     <%= link_to "← Geri Dön", events_path, class: "text-indigo-600 hover:underline font-medium text-xs" %>
@@ -29,30 +83,43 @@
         
         <% if @event.user_id == current_user.id %>
           <!-- Etkinliğin sahibi ise -->
-          <span style="background-color: #4f46e5 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Bu Etkinliğin Sahibisiniz</span>
+          <span style="background-color: #4f46e5 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Bu Etkinliğin Sahibisiniz</span>
         <% elsif reg %>
-          <%= link_to "Kaydı İptal Et", event_registration_path(@event, reg),
-              data: { turbo_method: :delete, turbo_confirm: "Emin misin?" },
-              style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+          <!-- Kullanıcı kayıtlıysa (Asıl veya Bekleme Listesinde) -->
+          <% if reg.waitlisted? %>
+            <span style="background-color: #d97706 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">⏳ Bekleme Listesindesiniz</span>
+          <% else %>
+            <span style="background-color: #16a34a !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">✅ Kaydınız Onaylandı</span>
+          <% end %>
+
+          <%= button_to "Kaydı İptal Et", event_registration_path(@event, reg),
+              method: :delete,
+              data: { turbo_confirm: "Emin misin?" },
+              style: "background-color: #dc2626 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: none; font-size: 12px; cursor: pointer; display: inline-block;" %>
         <% elsif @event.date_time <= Time.current %>
-          <span style="background-color: #9ca3af !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Etkinlik Başladı / Süresi Doldu</span>
-        <% elsif @event.registrations.count >= @event.quota %>
-          <span style="background-color: #9ca3af !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Dolu</span>
+          <span style="background-color: #9ca3af !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; font-size: 12px; display: inline-block;">Etkinlik Başladı / Süresi Doldu</span>
+        <% elsif @event.full? %>
+          <!-- Kontenjan doluysa Bekleme Listesine Katılma Butonu -->
+          <%= button_to "Bekleme Listesine Katıl", event_registrations_path(@event),
+              method: :post,
+              style: "background-color: #d97706 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: none; font-size: 12px; cursor: pointer; display: inline-block;" %>
         <% else %>
-          <%= link_to "Katıl", event_registrations_path(@event),
-              data: { turbo_method: :post },
-              style: "background-color: #16a34a !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+          <!-- Kontenjan boşsa Normal Katıl Butonu -->
+          <%= button_to "Katıl", event_registrations_path(@event),
+              method: :post,
+              style: "background-color: #16a34a !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: none; font-size: 12px; cursor: pointer; display: inline-block;" %>
         <% end %>
 
         <% if logged_in? && @event.user_id == current_user.id %>
           <%= link_to "Düzenle", edit_event_path(@event),
-              style: "background-color: #ca8a04 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+              style: "background-color: #ca8a04 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
         <% end %>
 
         <% if logged_in? && (@event.user_id == current_user.id || current_user.admin?) %>
-          <%= link_to "Sil", event_path(@event),
-              data: { turbo_method: :delete, turbo_confirm: "Bu etkinliği silmek istediğine emin misin?" },
-              style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; text-decoration: none; font-size: 12px; display: inline-block;" %>
+          <%= button_to "Sil", event_path(@event),
+              method: :delete,
+              data: { turbo_confirm: "Bu etkinliği silmek istediğine emin misin?" },
+              style: "background-color: #dc2626 !important; color: white !important; padding: 6px 12px; border-radius: 6px; font-weight: 500; border: none; font-size: 12px; cursor: pointer; display: inline-block;" %>
         <% end %>
 
       <% else %>
@@ -90,8 +157,8 @@
 
             <% if logged_in? && (comment.user == current_user || current_user.admin?) %>
               <div class="absolute bottom-2.5 right-3">
-                <%= link_to "Yorumu Sil", event_comment_path(@event, comment), 
-                    data: { turbo_method: :delete, turbo_confirm: "Silmek istediğine emin misin?" }, 
+                <%= link_to "Yorumu Sil", event_comment_path(@event, comment),
+                    data: { turbo_method: :delete, turbo_confirm: "Silmek istediğine emin misin?" },
                     style: "background-color: #dc2626 !important; color: white !important; opacity: 1 !important; padding: 4px 10px; border-radius: 4px; font-weight: 500; text-decoration: none; font-size: 10px; display: inline-block;" %>
               </div>
             <% end %>
