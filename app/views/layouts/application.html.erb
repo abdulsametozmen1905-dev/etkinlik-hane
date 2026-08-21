@@ -1,74 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr" class="h-full bg-gray-50">
   <head>
-    <title><%= content_for(:title) || "Etkinlik Hane" %></title>
+    <title><%= content_for(:title) || "Etkinlik-Hane" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="application-name" content="Etkinlik Hane">
-    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
-    <% if notice %>
-  <div class="max-w-4xl mx-auto mt-4 p-3 bg-green-100 border border-green-300 text-green-800 rounded-lg text-sm flex items-center justify-between">
-    <span><%= notice %></span>
-  </div>
-<% end %>
-
-<% if alert %>
-  <div class="max-w-4xl mx-auto mt-4 p-3 bg-red-100 border border-red-300 text-red-800 rounded-lg text-sm flex items-center justify-between">
-    <span><%= alert %></span>
-  </div>
-<% end %>
-
-    <% if flash[:notice] || notice %>
-  <div class="max-w-4xl mx-auto my-4 p-3 bg-green-100 border border-green-300 text-green-800 rounded-lg text-sm flex items-center justify-between shadow-sm">
-    <span><%= flash[:notice] || notice %></span>
-  </div>
-<% end %>
-
-<% if flash[:alert] || alert %>
-  <div class="max-w-4xl mx-auto my-4 p-3 bg-red-100 border border-red-300 text-red-800 rounded-lg text-sm flex items-center justify-between shadow-sm">
-    <span><%= flash[:alert] || alert %></span>
-  </div>
-<% end %>
 
     <%= yield :head %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
-  <body class="bg-gray-50 text-gray-900">
-    <!-- Üst Menü -->
-    <nav style="background-color: #111827; padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; color: white;">
-      <div>
-        <%= link_to "Etkinlik-Hane", root_path, style: "color: white; font-weight: bold; font-size: 18px; text-decoration: none;" %>
-      </div>
-      
-      <div style="display: flex; align-items: center; gap: 16px; font-size: 14px;">
-        <% if logged_in? %>
-          <% if current_user.respond_to?(:admin?) && current_user.admin? %>
-            <%= link_to "Kategori Yönetimi", admin_categories_path, style: "color: #fbbf24; text-decoration: none; font-weight: 500;" %>
-          <% end %>
-          <%= link_to "Etkinliklerim", my_events_path, style: "color: white; text-decoration: none;" %>
-          <%= link_to "Etkinlik Oluştur", new_event_path, style: "color: white; text-decoration: none;" %>
-          <span style="color: #ffffff; font-weight: 500;"><%= current_user.email %></span>
-          <%= link_to "Çıkış Yap", logout_path, data: { turbo_method: :delete }, style: "background-color: #dc2626; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;" %>
-          <%= link_to "Şifre Değiştir", edit_password_path, class: "text-sm text-indigo-600 hover:text-indigo-800 font-medium px-3 py-2" %>
-          <% else %>
-          <%= link_to "Giriş Yap", login_path, style: "color: white; text-decoration: none;" %>
-          <%= link_to "Kayıt Ol", signup_path, style: "background-color: #4f46e5; color: white; padding: 6px 12px; border-radius: 6px; text-decoration: none; font-size: 12px;" %>
-        <% end %>
+  <body class="min-h-full flex flex-col bg-gray-50 text-gray-900 font-sans">
+    
+    <!-- Üst Menü (Navbar) -->
+    <nav class="bg-gray-900 text-white shadow-md">
+      <div class="max-w-6xl mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          
+          <!-- Logo & Sol Menü -->
+          <div class="flex items-center gap-6">
+            <%= link_to "Etkinlik-Hane", root_path, class: "text-xl font-bold text-white tracking-wide hover:text-indigo-400 transition" %>
+            
+            <% if logged_in? %>
+              <% if current_user.respond_to?(:admin?) && current_user.admin? %>
+                <%= link_to "Kategori Yönetimi", admin_categories_path, class: "text-xs font-semibold bg-amber-500/20 text-amber-300 px-3 py-1.5 rounded-lg border border-amber-500/30 hover:bg-amber-500/30 transition" %>
+              <% end %>
+              <%= link_to "Etkinliklerim", my_events_path, class: "text-sm text-gray-300 hover:text-white transition" %>
+            <% end %>
+          </div>
+
+          <!-- Sağ Taraf -->
+          <div class="flex items-center gap-3">
+            <% if logged_in? %>
+              <%= link_to "+ Etkinlik Oluştur", new_event_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition" %>
+              
+              <span class="text-xs text-gray-300 bg-gray-800 px-3 py-1.5 rounded-lg border border-gray-700">
+                <%= current_user.email %>
+              </span>
+
+              <%= link_to "Şifre Değiştir", edit_password_path, class: "text-xs text-indigo-300 hover:text-indigo-200 underline transition" %>
+              <%= link_to "Çıkış", logout_path, data: { turbo_method: :delete }, class: "bg-red-600 hover:bg-red-700 text-white text-xs font-medium px-3 py-2 rounded-lg transition" %>
+            <% else %>
+              <%= link_to "Giriş Yap", login_path, class: "text-sm text-gray-300 hover:text-white transition px-2" %>
+              <%= link_to "Kayıt Ol", signup_path, class: "bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition" %>
+            <% end %>
+          </div>
+
+        </div>
       </div>
     </nav>
 
-    <!-- Ana İçerik -->
-    <main class="container mx-auto mt-8 px-5">
+    <!-- Bildirimler (Flash) -->
+    <div class="max-w-4xl mx-auto w-full px-4 mt-4 space-y-2">
+      <% if notice.present? %>
+        <div id="flash-notice" class="p-3.5 bg-green-50 border border-green-200 text-green-800 rounded-lg text-sm flex items-center justify-between shadow-sm">
+          <span><%= notice %></span>
+          <button type="button" onclick="this.closest('#flash-notice').remove()" class="text-green-600 font-bold hover:text-green-900 cursor-pointer ml-2">✕</button>
+        </div>
+      <% end %>
+
+      <% if alert.present? %>
+        <div id="flash-alert" class="p-3.5 bg-red-50 border border-red-200 text-red-800 rounded-lg text-sm flex items-center justify-between shadow-sm">
+          <span><%= alert %></span>
+          <button type="button" onclick="this.closest('#flash-alert').remove()" class="text-red-600 font-bold hover:text-red-900 cursor-pointer ml-2">✕</button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Ana Sayfa İçeriği -->
+    <main class="max-w-6xl mx-auto w-full px-4 py-6 flex-1">
       <%= yield %>
     </main>
+
+    <!-- Alt Bilgi (Footer) -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-auto">
+      <div class="max-w-6xl mx-auto px-4 text-center text-xs text-gray-500">
+        <p>© <%= Time.current.year %> Etkinlik-Hane. Tüm hakları saklıdır.</p>
+      </div>
+    </footer>
+
   </body>
 </html>

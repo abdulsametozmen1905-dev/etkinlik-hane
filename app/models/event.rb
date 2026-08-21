@@ -15,12 +15,18 @@ class Event < ApplicationRecord
   validates :title, :description, :date_time, :location, :quota, presence: true
   validates :quota, numericality: { only_integer: true, greater_than: 0 }
 
-  # Taslak kontrolü
+  def average_rating
+    ratings.average(:score)&.round(1) || 0.0
+  end
+
+  def rated?
+    ratings.any?
+  end
+
   def draft?
     !published?
   end
 
-  # Kontenjan ve Bekleme Listesi Metodları
   def confirmed_registrations_count
     registrations.confirmed.count
   end
@@ -33,7 +39,6 @@ class Event < ApplicationRecord
     [quota - confirmed_registrations_count, 0].max
   end
 
-  # Ortalama Puan Metodu
   def average_rating
     return 0 if ratings.empty?
     ratings.average(:score).to_f.round(1)
