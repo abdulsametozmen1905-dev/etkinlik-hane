@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  before_action :require_login, only: [:events]
+  before_action :require_login, only: [ :events ]
 
   def new
     @user = User.new

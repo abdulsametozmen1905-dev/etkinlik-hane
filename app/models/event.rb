@@ -6,12 +6,10 @@ class Event < ApplicationRecord
   has_many :ratings, dependent: :destroy
   has_one_attached :cover_image
 
-  # Scope'lar (Filtreler)
   scope :published, -> { where(published: true) }
   scope :drafts, -> { where(published: false) }
   scope :upcoming, -> { where("date_time >= ?", Time.current).order(date_time: :asc) }
 
-  # Validasyonlar
   validates :title, :description, :date_time, :location, :quota, presence: true
   validates :quota, numericality: { only_integer: true, greater_than: 0 }
 
@@ -36,7 +34,7 @@ class Event < ApplicationRecord
   end
 
   def remaining_quota
-    [quota - confirmed_registrations_count, 0].max
+    [ quota - confirmed_registrations_count, 0 ].max
   end
 
   def average_rating

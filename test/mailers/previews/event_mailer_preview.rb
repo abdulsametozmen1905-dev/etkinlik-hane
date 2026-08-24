@@ -5,7 +5,7 @@ class EventMailerPreview < ActionMailer::Preview
       user: User.first,
       event: Event.first
     )
-    
+
     EventMailer.registration_confirmation(registration)
   end
 end

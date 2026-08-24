@@ -1,5 +1,5 @@
 class EventMailer < ApplicationMailer
-  default from: 'bildirim@etkinlikhane.com'
+  default from: "bildirim@etkinlikhane.com"
 
   def registration_confirmation(registration)
     @registration = registration
