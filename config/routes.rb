@@ -6,6 +6,8 @@ Rails.application.routes.draw do
   resource :password, only: [ :edit, :update ]
 
   namespace :admin do
+    get "/", to: "dashboard#index", as: :root
+    get "dashboard", to: "dashboard#index"
   resources :categories, except: [ :show ]
 end
 

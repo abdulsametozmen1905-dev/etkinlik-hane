@@ -1,0 +1,118 @@
+<div class="space-y-8">
+<!-- Üst Başlık
+<div class="border-b border-gray-200 pb-5">
+    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Yönetici & İstatistik Paneli</h1>
+    <p class="text-sm text-gray-500 mt-1">Platformun genel durumu, metrikleri ve son hareketleri.</p>
+</div>
+
+<!-- Sayaç Kartları (Grid) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+    
+    <!-- Kullanıcılar -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+    <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Toplam Kullanıcı</p>
+        <p class="text-2xl font-extrabold text-gray-900 mt-1"><%= @total_users %></p>
+    </div>
+    <div class="w-11 h-11 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+        👥
+    </div>
+    </div>
+
+    <!-- Etkinlikler -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+    <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Toplam Etkinlik</p>
+        <p class="text-2xl font-extrabold text-gray-900 mt-1"><%= @total_events %></p>
+        <p class="text-xs text-gray-400 mt-0.5"><%= @published_events %> Yayında / <%= @draft_events %> Taslak</p>
+    </div>
+    <div class="w-11 h-11 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+        📅
+    </div>
+    </div>
+
+    <!-- Kayıtlar -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+    <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Toplam Kayıt</p>
+        <p class="text-2xl font-extrabold text-gray-900 mt-1"><%= @total_registrations %></p>
+        <p class="text-xs text-gray-400 mt-0.5"><%= @confirmed_registrations %> Onaylı / <%= @waitlisted_registrations %> Yedek</p>
+    </div>
+    <div class="w-11 h-11 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-lg">
+        🎟️
+    </div>
+    </div>
+
+    <!-- Puanlar -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between">
+    <div>
+        <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Toplam Değerlendirme</p>
+        <p class="text-2xl font-extrabold text-gray-900 mt-1"><%= @total_ratings %></p>
+        <p class="text-xs text-gray-400 mt-0.5">Kullanıcı Puanı</p>
+    </div>
+    <div class="w-11 h-11 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+        ⭐
+    </div>
+    </div>
+
+</div>
+
+<!-- Detay Tabloları (2 Kolon) -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    
+    <!-- Son Eklenen Etkinlikler -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <h3 class="font-bold text-gray-800 text-sm">Son Eklenenler</h3>
+        <span class="text-xs text-gray-400">Son 5 etkinlik</span>
+    </div>
+    <div class="divide-y divide-gray-100">
+        <% if @recent_events.any? %>
+        <% @recent_events.each do |event| %>
+            <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition">
+            <div>
+                <p class="font-semibold text-sm text-gray-900"><%= link_to event.title, event_path(event), class: "hover:text-indigo-600" %></p>
+                <p class="text-xs text-gray-500 mt-0.5">Düzenleyen: <%= event.user&.email %> • <%= event.category&.name %></p>
+            </div>
+            <div>
+                <% if event.published? %>
+                <span class="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Yayında</span>
+                <% else %>
+                <span class="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-600">Taslak</span>
+                <% end %>
+            </div>
+            </div>
+        <% end %>
+        <% else %>
+        <p class="p-4 text-xs text-gray-500">Henüz etkinlik bulunmuyor.</p>
+        <% end %>
+    </div>
+    </div>
+
+    <!-- En Popüler Etkinlikler -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+    <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <h3 class="font-bold text-gray-800 text-sm">En Çok İlgi Gören Etkinlikler</h3>
+        <span class="text-xs text-gray-400">Kayıtlara göre</span>
+    </div>
+    <div class="divide-y divide-gray-100">
+        <% if @popular_events.any? %>
+        <% @popular_events.each do |event| %>
+            <div class="p-4 flex items-center justify-between hover:bg-gray-50 transition">
+            <div>
+                <p class="font-semibold text-sm text-gray-900"><%= link_to event.title, event_path(event), class: "hover:text-indigo-600" %></p>
+                <p class="text-xs text-gray-500 mt-0.5">Puan: ⭐ <%= event.average_rating %> (<%= event.ratings.count %> oy)</p>
+            </div>
+            <div class="text-right">
+                <span class="font-bold text-sm text-indigo-600"><%= event.registrations.count %></span>
+                <span class="text-xs text-gray-500">kayıt</span>
+            </div>
+            </div>
+        <% end %>
+        <% else %>
+        <p class="p-4 text-xs text-gray-500">Henüz kayıt verisi bulunmuyor.</p>
+        <% end %>
+    </div>
+    </div>
+</div>
+</div>
