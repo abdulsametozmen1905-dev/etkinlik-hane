@@ -3,7 +3,6 @@ class DashboardController < ApplicationController
     before_action :require_admin
 
     def index
-    # Genel Sayaçlar
     @total_users = User.count
     @total_events = Event.count
     @published_events = Event.published.count
@@ -13,10 +12,8 @@ class DashboardController < ApplicationController
     @waitlisted_registrations = Registration.waitlisted.count
     @total_ratings = Rating.count
 
-    # Son 5 Etkinlik
     @recent_events = Event.order(created_at: :desc).limit(5)
 
-    # En Çok Kayıt Alan 5 Etkinlik
     @popular_events = Event.joins(:registrations)
                             .group("events.id")
                             .order("COUNT(registrations.id) DESC")
